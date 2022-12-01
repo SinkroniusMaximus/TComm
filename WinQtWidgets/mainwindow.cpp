@@ -20,7 +20,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::timedLoop()
 {
-    Comm.Xchange();
+    Communicator.Xchange();
     //Status
     ui->stsMotorSpeed->display(dataSource->stsMotorSpeed);
     if(!dataSource->stsMotorRun)

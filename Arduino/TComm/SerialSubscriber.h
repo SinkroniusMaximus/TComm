@@ -1,0 +1,1 @@
+../../Lib/TemplateCommunicator/SerialSubscriber.h

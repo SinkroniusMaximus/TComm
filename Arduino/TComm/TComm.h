@@ -1,1 +1,1 @@
-../../Lib/TComm.h
+../../Lib/TemplateCommunicator/TComm.h

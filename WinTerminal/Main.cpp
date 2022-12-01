@@ -3,7 +3,7 @@
 
 Data dataSource;
 HardwareSerial Serial{"COM1"};
-SerialSub serial;
+SerialSubscriber serial;
 
 void setup() 
 {
@@ -13,7 +13,7 @@ void setup()
 
 void loop() 
 {
-    Comm.Xchange();
+    Communicator.Xchange();
 }
 
 

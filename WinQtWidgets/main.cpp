@@ -5,7 +5,7 @@
 
 Data dataSource;
 HardwareSerial Serial{"COM1"};
-SerialSub serial;
+SerialSubscriber serial;
 
 int main(int argc, char *argv[])
 {
