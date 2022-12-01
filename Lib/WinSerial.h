@@ -11,7 +11,7 @@
 
             HardwareSerial(String comPort, DWORD baudrate, BYTE byteSize, BYTE stopBits, BYTE parity)
             {
-                serialHandle = CreateFile(("\\\\.\\" + comPort).c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+                serialHandle = CreateFileA(("\\\\.\\" + comPort).c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
                 // Do some basic settings
                 DCB serialParams = { 0 };
                 serialParams.DCBlength = sizeof(serialParams);

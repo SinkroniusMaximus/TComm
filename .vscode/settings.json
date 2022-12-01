@@ -3,5 +3,7 @@
         "system_error": "cpp",
         "type_traits": "cpp"
     },
-    "C_Cpp.errorSquiggles": "Disabled"
+    "C_Cpp.errorSquiggles": "Disabled",
+    "cmake.sourceDirectory": "${workspaceFolder}/WinTerminal"
+    "cmake.generator": "MinGW Makefiles"
 }
