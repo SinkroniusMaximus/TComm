@@ -2,13 +2,13 @@
 #include "../Lib/WinSerial.h"
 
 Data dataSource;
-HardwareSerial Serial{"COM1"};
-SerialSubscriber serial;
+HardwareSerial Serial;
+SerialSubscriber serialSub;
 
 void setup() 
 {
-    serial.Xinit(&Serial);
-    dataSource.cmdMotorSpeed = 100.0f;
+    Serial.begin("COM3", 115200);
+    serialSub.Xinit(&Serial);
 }
 
 void loop() 

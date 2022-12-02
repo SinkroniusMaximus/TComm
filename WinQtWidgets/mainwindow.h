@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTimer>
 #include "Data.h"
+#include "../Lib/WinSerial.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -14,13 +15,15 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
     public:
-        MainWindow(QWidget *parent = nullptr, Data* dataSource = nullptr);
+        MainWindow(QWidget *parent = nullptr);
         ~MainWindow();
 
     private:
         Ui::MainWindow *ui;
-        Data* dataSource;
+        Data dataSource;
         QTimer timer;
+        HardwareSerial Serial;
+        SerialSubscriber serialSub;
 
     private slots:
         void timedLoop();

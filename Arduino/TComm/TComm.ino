@@ -13,6 +13,6 @@ void setup() {
 void loop() 
 {
     Communicator.Xchange();
-    dataSource.stsMotorSpeed = dataSource.cmdMotorSpeed;
-    dataSource.cmdRunMotor = dataSource.stsMotorRun;
+    dataSource.stsMotorSpeed = (float)dataSource.cmdMotorSpeed;
+    dataSource.stsMotorRun = (bool)dataSource.cmdRunMotor;
 }

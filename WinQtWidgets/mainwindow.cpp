@@ -1,12 +1,18 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent, Data* dataSource)
+MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->dataSource = dataSource;
+    Serial.begin("COM3", 115200);
+    serialSub.Xinit(&Serial);
+    dataSource.cmdMotorFast = 0;
+    dataSource.cmdMotorSpeed = 0;
+    dataSource.cmdRunMotor = false;
+    dataSource.stsMotorSpeed = 0;
+    dataSource.stsMotorRun = 0;
     connect(&timer, SIGNAL (timeout()), this, SLOT (timedLoop()));
     connect(ui->cmdMotorRun, SIGNAL(toggled(bool)), this, SLOT(cmdMotorRunChanged(bool)));
     connect(ui->cmdMotorSpeed, SIGNAL(valueChanged(int)), this, SLOT(cmdMotorSpeedChanged(int)));
@@ -22,8 +28,8 @@ void MainWindow::timedLoop()
 {
     Communicator.Xchange();
     //Status
-    ui->stsMotorSpeed->display(dataSource->stsMotorSpeed);
-    if(!dataSource->stsMotorRun)
+    ui->stsMotorSpeed->display(dataSource.stsMotorSpeed);
+    if(!dataSource.stsMotorRun)
     {
         ui->stsMotorRun->setText("Stopped");
     }
@@ -36,9 +42,9 @@ void MainWindow::timedLoop()
 
 void MainWindow::cmdMotorRunChanged(bool checked)
 {
-    dataSource->cmdRunMotor = checked;
+    dataSource.cmdRunMotor = checked;
 }
 void MainWindow::cmdMotorSpeedChanged(int newSpeed)
 {
-    dataSource->cmdMotorSpeed = (float)newSpeed;
+    dataSource.cmdMotorSpeed = (float)newSpeed;
 }

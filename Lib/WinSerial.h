@@ -4,59 +4,95 @@
     class HardwareSerial
     {
         public:
-            HardwareSerial(String comPort)
-            {
-                HardwareSerial(comPort, 9600, 8, TWOSTOPBITS, NOPARITY);  
-            }
-
-            HardwareSerial(String comPort, DWORD baudrate, BYTE byteSize, BYTE stopBits, BYTE parity)
-            {
-                serialHandle = CreateFileA(("\\\\.\\" + comPort).c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-                // Do some basic settings
-                DCB serialParams = { 0 };
-                serialParams.DCBlength = sizeof(serialParams);
-
-                GetCommState(serialHandle, &serialParams);
-                serialParams.BaudRate = baudrate;
-                serialParams.ByteSize = byteSize;
-                serialParams.StopBits = stopBits;
-                serialParams.Parity = parity;
-                SetCommState(serialHandle, &serialParams);
-
-                // Set timeouts
-                COMMTIMEOUTS timeout = { 0 };
-                timeout.ReadIntervalTimeout = 50;
-                timeout.ReadTotalTimeoutConstant = 50;
-                timeout.ReadTotalTimeoutMultiplier = 50;
-                timeout.WriteTotalTimeoutConstant = 50;
-                timeout.WriteTotalTimeoutMultiplier = 10;
-
-                SetCommTimeouts(serialHandle, &timeout);
-
-            }
+            HardwareSerial() {}
             ~HardwareSerial()
             {
                 CloseHandle(serialHandle);
             }
+
+            void begin(String comPort, DWORD baudrate)
+            {
+                begin(comPort, baudrate, 8, TWOSTOPBITS, NOPARITY);
+            }
+
+            void begin(String comPort, DWORD baudrate, BYTE byteSize, BYTE stopBits, BYTE parity)
+            {
+                CloseHandle(serialHandle);
+                cout << "opening serialport " << ("\\\\.\\" + comPort).c_str() << "\n"; 
+                serialHandle = CreateFileA(("\\\\.\\" + comPort).c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+                if(serialHandle==INVALID_HANDLE_VALUE)
+                {
+                    if(GetLastError()==ERROR_FILE_NOT_FOUND)
+                    {
+                        cout << "serial port not found.\n";
+                        //serial port not found. Handle error here.
+                    }
+                    else
+                    {
+                        //any other error. Handle error here.
+                        cout << "any other error.\n";
+                    }
+                }
+                // Do some basic settings
+                DCB serialParams = { 0 };
+                serialParams.DCBlength = sizeof(serialParams);
+                if (!GetCommState(serialHandle, &serialParams)) 
+                {
+                    cout << "getcommstate handle error here\n";
+                    //handle error here
+                }
+
+                // GetCommState(serialHandle, &serialParams);
+                serialParams.BaudRate = baudrate;
+                serialParams.ByteSize = byteSize;
+                serialParams.StopBits = stopBits;
+                serialParams.Parity = parity;
+                if(!SetCommState(serialHandle, &serialParams))
+                {
+                    cout << "setcommstate handle error here\n";
+                    //handle error here
+                }
+                // Set timeouts
+                COMMTIMEOUTS timeout = { 0 };
+                timeout.ReadIntervalTimeout = 5;
+                timeout.ReadTotalTimeoutConstant = 5;
+                timeout.ReadTotalTimeoutMultiplier = 5;
+                timeout.WriteTotalTimeoutConstant = 5;
+                timeout.WriteTotalTimeoutMultiplier = 1;
+                if(!SetCommTimeouts(serialHandle, &timeout))
+                {
+                    cout << "setcommtimeout handle error here\n";
+                    //handle error here
+                }
+                cout << "setup comport done\n";
+            }
+
             char read()
             {
                 return readBuffer[0];
             }
+
             bool write(byte* buffer, int size)
             {
-                WriteFile(serialHandle, buffer, size, &writeSize, NULL);
+                if(!WriteFile(serialHandle, buffer, size, &writeSize, NULL))
+                {
+                    cout << "error nr " << GetLastError() << "\n";
+                }
                 return ((int)writeSize == size);
-
             }
+            
             int available()
             {
-                ReadFile(serialHandle, readBuffer, sizeof(readBuffer), &readSize, NULL); 
+                if(!ReadFile(serialHandle, readBuffer, sizeof(readBuffer), &readSize, NULL))
+                {
+                    cout << "error nr " << GetLastError() << "\n";
+                }
                 return (int)readSize;
             }
         private:
             // Open serial port
             HANDLE serialHandle;
-            char readBuffer[1];
+            byte readBuffer[1];
             DWORD readSize;
             DWORD writeSize;
     };

@@ -71,24 +71,24 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
                 {        
                     subList.get(i)->write(CommunicationData{(byte *)&value, sizeof(value), commIndex});
                 } // on change iterate through subscribers
-                #ifdef TCommESP32
-                    Serial.println(value);
-                #endif
-                #ifdef TCommWindows
-                    cout << value << "\n";
-                #endif
+                // #ifdef TCommESP32
+                //     Serial.println(value);
+                // #endif
+                // #ifdef TCommWindows
+                //     cout << value << "\n";
+                // #endif
             } 
         }
 
         void inject(byte buffer[]) override 
         {
             value = *(T *)buffer; 
-            #ifdef TCommESP32
-                Serial.print("injected: "); Serial.println(value);
-            #endif
-            #ifdef TCommWindows
-                cout << "injected: " << value << "\n";
-            #endif      
+            // #ifdef TCommESP32
+            //     Serial.print("injected esp: "); Serial.println(value);
+            // #endif
+            // #ifdef TCommWindows
+            //     cout << "injected: " << value << "\n";
+            // #endif      
         }
 
         T* operator ->() 
