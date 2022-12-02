@@ -11,7 +11,9 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
         { 
             commList.add(this);
         }
+
         ~TemplateCommunicator() {}
+
         void Xinit() 
         { 
             
@@ -27,14 +29,17 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
             if(!equals(input)) 
             { 
                 changed = true; 
-                valueOld = value = input; 
+                valueOld = input;
+                value = input; 
             } 
             return *this;
         }
+
         operator T&()
         { 
             return value; 
         }
+
         void set(T input) 
         { 
             if(!equals(input)) 
@@ -44,10 +49,12 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
                 value = input;
             }
         }
+
         T get() 
         { 
             return value;
         }
+
         void update(int commIndex) override 
         { 
             if(isAccessed()) 
@@ -72,6 +79,7 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
                 #endif
             } 
         }
+
         void inject(byte buffer[]) override 
         {
             value = *(T *)buffer; 
@@ -82,29 +90,34 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
                 cout << "injected: " << value << "\n";
             #endif      
         }
+
         T* operator ->() 
         { 
             accessed = true; 
             return &value; 
         }
-        private:
+
+    private:
         T value;
         T valueOld;
         bool changed;
         bool accessed;
         String commName;
+
         bool isChanged() 
         { 
             bool isChanged = changed;
             changed = false; 
             return isChanged; 
         }
+
         bool isAccessed() 
         { 
             bool isAccessed = accessed;
             accessed = false;
             return isAccessed; 
         }
+        
         bool equals( T input) 
         { 
             return value == input;

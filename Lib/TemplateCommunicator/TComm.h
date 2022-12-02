@@ -25,6 +25,7 @@ static LinkedPointerList<AbstractSubscriber> subList; // Subscriber object list
 
 #include "TemplateCommunicator.h"
 #include "Communicator.h"
+#include "ByteSerializer.h"
 #include "SerialSubscriber.h"
 
 #endif //TCOMM_H
