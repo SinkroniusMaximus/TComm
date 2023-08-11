@@ -6,4 +6,5 @@
     #define WINDOWS_LEAN_AND_MEAN
     #include <windows.h>
     typedef string String;
+    #include <cstdint>
 #endif //WINCOMMON_H

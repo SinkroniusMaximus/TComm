@@ -11,6 +11,11 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
         { 
             commList.add(this);
         }
+        TemplateCommunicator(String input) 
+        { 
+            commList.add(this);
+            commName = input;
+        }
 
         ~TemplateCommunicator() {}
 
@@ -95,6 +100,20 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
         { 
             accessed = true; 
             return &value; 
+        }
+        String getName()
+        {
+            return commName;
+        }
+
+        void setName(String input)
+        {
+            commName = input;
+        }
+
+        const std::type_info* getType()
+        {
+            return &typeid(T);
         }
 
     private:
