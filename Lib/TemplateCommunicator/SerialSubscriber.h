@@ -8,7 +8,8 @@ class SerialSubscriber : ByteSerializer, AbstractSubscriber // Subscription of s
     public:  
         void Xinit(HardwareSerial* newPort) 
         { 
-            subList.add(this); 
+            // subList.add(this); 
+            subList.push_back(this); 
             port = newPort;
         }
 

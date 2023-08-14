@@ -9,12 +9,16 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
     public:
         TemplateCommunicator() 
         { 
-            commList.add(this);
+            // commList.add(this);
+            commList.push_back(this);
+            std::cout << "has " << commList.size() << " variables";
         }
         TemplateCommunicator(String input) 
         { 
-            commList.add(this);
+            // commList.add(this);
+            commList.push_back(this);
             commName = input;
+            std::cout << "has " << commList.size() << " variables";
         }
 
         ~TemplateCommunicator() {}
@@ -74,7 +78,8 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
             {
                 for (int i = 0; i < subList.size(); i=i+1)
                 {        
-                    subList.get(i)->write(CommunicationData{(byte *)&value, sizeof(value), commIndex});
+                    // subList.get(i)->write(CommunicationData{(byte *)&value, sizeof(value), commIndex});
+                    subList.at(i)->write(CommunicationData{(byte *)&value, sizeof(value), commIndex});
                 } // on change iterate through subscribers
                 // #ifdef TCommESP32
                 //     Serial.println(value);

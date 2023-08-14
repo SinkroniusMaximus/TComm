@@ -19,9 +19,12 @@
 #include "CommunicationData.h"
 #include "AbstractCommunicator.h"
 #include "AbstractSubscriber.h"
+#include <vector>
 
-static LinkedPointerList<AbstractCommunicator> commList; // Communication object list
-static LinkedPointerList<AbstractSubscriber> subList; // Subscriber object list
+static std::vector<AbstractCommunicator*> commList; // Communication object list
+static std::vector<AbstractSubscriber*> subList; //  Subscriber object list
+// static LinkedPointerList<AbstractCommunicator> commList; // Communication object list
+// static LinkedPointerList<AbstractSubscriber> subList; // Subscriber object list
 
 #include "TemplateCommunicator.h"
 #include "Communicator.h"

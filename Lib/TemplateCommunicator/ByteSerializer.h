@@ -52,7 +52,8 @@ class ByteSerializer
             if(readIndex == (dataSize + 7))
             {
                 //todo check if the deviceIndex belongs to this device
-                commList.get(commIndex)->inject(buffer + 8);
+                // commList.get(commIndex)->inject(buffer + 8);
+                commList.at(commIndex)->inject(buffer + 8);
                 //todo or otherwise relay the raw message to the subscriber list
                 readIndex = 0;
                 return;
