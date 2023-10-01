@@ -1,37 +1,28 @@
 #ifndef TEMPLATECOMMUNICATOR_H
 #define TEMPLATECOMMUNICATOR_H
 
-#include "TComm.h"
-
+namespace TComm {
 template <class T>
 class TemplateCommunicator : AbstractCommunicator //Template Communication object
 {
     public:
         TemplateCommunicator() 
         { 
-            // commList.add(this);
             commList.push_back(this);
-            std::cout << "has " << commList.size() << " variables";
         }
-        TemplateCommunicator(String input) 
+        TemplateCommunicator(String name) 
         { 
-            // commList.add(this);
             commList.push_back(this);
-            commName = input;
-            std::cout << "has " << commList.size() << " variables";
+            commName = name;
+        }
+        TemplateCommunicator(String name, String* path) 
+        { 
+            commList.push_back(this);
+            commName = name;
+            commPath = path;
         }
 
         ~TemplateCommunicator() {}
-
-        void Xinit() 
-        { 
-            
-        }
-
-        void Xinit(String input) 
-        { 
-            commName = input; 
-        }
 
         TemplateCommunicator<T>& operator = (const T& input) 
         { 
@@ -97,7 +88,7 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
             //     Serial.print("injected esp: "); Serial.println(value);
             // #endif
             // #ifdef TCommWindows
-            //     cout << "injected: " << value << "\n";
+            //     cout << "injected: " << commName << " " << value << "\n";
             // #endif      
         }
 
@@ -111,9 +102,9 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
             return commName;
         }
 
-        void setName(String input)
+        void setName(String name)
         {
-            commName = input;
+            commName = name;
         }
 
         const std::type_info* getType()
@@ -127,6 +118,7 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
         bool changed;
         bool accessed;
         String commName;
+        String* commPath;
 
         bool isChanged() 
         { 
@@ -146,6 +138,7 @@ class TemplateCommunicator : AbstractCommunicator //Template Communication objec
         { 
             return value == input;
         }
+};
 };
 
 #endif //TEMPLATECOMMUNICATOR_H

@@ -1,7 +1,7 @@
 #ifndef COMMUNICATOR_H
 #define COMMUNICATOR_H
 
-#include "TComm.h"
+namespace TComm {
 
 static class Communicator // Communicator 
 {
@@ -22,5 +22,6 @@ static class Communicator // Communicator
     private:
         int i;
 } Communicator;
+};
 
 #endif //COMMUNICATOR

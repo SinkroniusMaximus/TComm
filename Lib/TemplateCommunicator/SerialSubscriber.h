@@ -1,7 +1,7 @@
 #ifndef SERIALSUBSCRIBER_H
 #define SERIALSUBSCRIBER_H
 
-#include "TComm.h"
+namespace TComm {
 
 class SerialSubscriber : ByteSerializer, AbstractSubscriber // Subscription of serial port to the communicator
 {
@@ -47,5 +47,5 @@ class SerialSubscriber : ByteSerializer, AbstractSubscriber // Subscription of s
     private:
         HardwareSerial* port;
 };
-
+};
 #endif //SERIALSUBSCRIBER

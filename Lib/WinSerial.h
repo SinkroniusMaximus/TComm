@@ -1,6 +1,8 @@
 #ifndef WINSERIAL_H
 #define WINSERIAL_H
     #include "WinCommon.h"
+namespace TComm
+{   
     class HardwareSerial
     {
         public:
@@ -18,19 +20,19 @@
             void begin(String comPort, DWORD baudrate, BYTE byteSize, BYTE stopBits, BYTE parity)
             {
                 CloseHandle(serialHandle);
-                cout << "opening serialport " << ("\\\\.\\" + comPort).c_str() << "\n"; 
+                std::cout << "opening serialport " << ("\\\\.\\" + comPort).c_str() << "\n"; 
                 serialHandle = CreateFileA(("\\\\.\\" + comPort).c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
                 if(serialHandle==INVALID_HANDLE_VALUE)
                 {
                     if(GetLastError()==ERROR_FILE_NOT_FOUND)
                     {
-                        cout << "serial port not found.\n";
+                        std::cout << "serial port not found.\n";
                         //serial port not found. Handle error here.
                     }
                     else
                     {
                         //any other error. Handle error here.
-                        cout << "any other error.\n";
+                        std::cout << "any other error.\n";
                     }
                 }
                 // Do some basic settings
@@ -38,7 +40,7 @@
                 serialParams.DCBlength = sizeof(serialParams);
                 if (!GetCommState(serialHandle, &serialParams)) 
                 {
-                    cout << "getcommstate handle error here\n";
+                    std::cout << "getcommstate handle error here\n";
                     //handle error here
                 }
 
@@ -49,7 +51,7 @@
                 serialParams.Parity = parity;
                 if(!SetCommState(serialHandle, &serialParams))
                 {
-                    cout << "setcommstate handle error here\n";
+                    std::cout << "setcommstate handle error here\n";
                     //handle error here
                 }
                 // Set timeouts
@@ -61,10 +63,10 @@
                 timeout.WriteTotalTimeoutMultiplier = 1;
                 if(!SetCommTimeouts(serialHandle, &timeout))
                 {
-                    cout << "setcommtimeout handle error here\n";
+                    std::cout << "setcommtimeout handle error here\n";
                     //handle error here
                 }
-                cout << "setup comport done\n";
+                std::cout << "setup comport done\n";
             }
 
             char read()
@@ -76,7 +78,7 @@
             {
                 if(!WriteFile(serialHandle, buffer, size, &writeSize, NULL))
                 {
-                    cout << "error nr " << GetLastError() << "\n";
+                    std::cout << "error nr " << GetLastError() << "\n";
                 }
                 return ((int)writeSize == size);
             }
@@ -85,7 +87,7 @@
             {
                 if(!ReadFile(serialHandle, readBuffer, sizeof(readBuffer), &readSize, NULL))
                 {
-                    cout << "error nr " << GetLastError() << "\n";
+                    std::cout << "error nr " << GetLastError() << "\n";
                 }
                 return (int)readSize;
             }
@@ -96,4 +98,5 @@
             DWORD readSize;
             DWORD writeSize;
     };
+};
 #endif //WINSERIAL_H

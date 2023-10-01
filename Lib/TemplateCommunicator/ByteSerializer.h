@@ -1,6 +1,7 @@
 #ifndef BYTESERIALIZER_H
 #define BYTESERIALIZER_H
 
+namespace TComm {
 class ByteSerializer
 {
     public:
@@ -67,5 +68,6 @@ class ByteSerializer
         uint16_t dataSize;
         uint16_t commIndex;
 }; 
+};
 
 #endif //BYTESERIALIZER_H
