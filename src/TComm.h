@@ -11,8 +11,8 @@
 #endif
 
 #ifdef TCommWindows
-  #include "..\WinCommon.h"
-  #include "..\WinSerial.h"
+  #include "Windows\WinCommon.h"
+  #include "Windows\WinSerial.h"
 #endif
 
 
@@ -32,5 +32,6 @@ namespace TComm
 #include "Communicator.h"
 #include "ByteSerializer.h"
 #include "SerialSubscriber.h"
+using namespace TComm;
 
 #endif //TCOMM_H
