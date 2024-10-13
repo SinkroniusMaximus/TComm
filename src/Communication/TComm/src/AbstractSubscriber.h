@@ -6,8 +6,8 @@ namespace TComm {
 class AbstractSubscriber // Abstract subscription object
 {
     public:
-        virtual void write(CommunicationData data) = 0;
-        virtual void read() = 0;
+        virtual void Write(CommunicationData data) = 0;
+        virtual void Read() = 0;
 };
 };
 

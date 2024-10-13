@@ -6,8 +6,9 @@ namespace TComm {
     {
     public:
         byte* buffer;
-        int size;
-        int commIndex;
+        uint16_t deviceIndex;
+        uint16_t dataSize;
+        uint16_t objectIndex;
     };
 };
 

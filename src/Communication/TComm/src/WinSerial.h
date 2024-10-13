@@ -1,9 +1,8 @@
 #ifndef WINSERIAL_H
 #define WINSERIAL_H
-    #include "WinCommon.h"
 namespace TComm
 {   
-    class HardwareSerial
+    class HardwareSerial : public StreamInterface
     {
         public:
             HardwareSerial() {}

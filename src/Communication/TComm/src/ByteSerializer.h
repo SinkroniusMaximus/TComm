@@ -8,22 +8,18 @@ class ByteSerializer
         ByteSerializer()
         {
             readIndex = 0;
-            deviceIndex = 0;
-            dataSize = 0;
-            commIndex = 0;
         }
         void Serialize(CommunicationData data, byte out[])
         {
             //format: [startKey, deviceIndex, size, commIndex, data bytes]
             uint16_t startKey = 0xDBFB;
-            uint16_t devIndex = 0x1;            // todo create variable deviceIndex
             memcpy(out, &startKey, 2); // 0,1
-            memcpy((out + 2), &devIndex, 2); // 2,3
-            memcpy((out + 4), &data.size, 2); // 4,5
-            memcpy((out + 6), &data.commIndex, 2); //6,7
-            memcpy((out + 8), data.buffer, data.size); // size:4 -> 8,9,10,11
+            memcpy((out + 2), &data.deviceIndex, 2); // 2,3
+            memcpy((out + 4), &data.dataSize, 2); // 4,5
+            memcpy((out + 6), &data.objectIndex, 2); //6,7
+            memcpy((out + 8), data.buffer, data.dataSize); // size:4 -> 8,9,10,11
         };
-        void Deserialize(byte read)
+        CommunicationData* Deserialize(byte read)
         {
             //store a byte
             buffer[readIndex] = read;
@@ -32,41 +28,37 @@ class ByteSerializer
                || readIndex == 1 && buffer[1] != 0xDB) 
             {
                 readIndex = 0;
-                return;
+                return nullptr;
             }
             //store the deviceIndex
             if(readIndex == 3) 
             { 
-                deviceIndex = buffer[2] + (buffer[3] << 8);
+                receivedData.deviceIndex = buffer[2] + (buffer[3] << 8);
             }
             //store the size of the data
             if(readIndex == 5)
             {
-                dataSize = buffer[4] + (buffer[5] << 8);
+                receivedData.dataSize = buffer[4] + (buffer[5] << 8);
             }
             //store the list index of the communicated data
             if(readIndex == 7)
             {
-                commIndex = buffer[6] + (buffer[7] << 8);
+                receivedData.objectIndex = buffer[6] + (buffer[7] << 8);
             }
             //relay and inject the completed message
-            if(readIndex == (dataSize + 7))
+            if(readIndex == (receivedData.dataSize + 7))
             {
-                //todo check if the deviceIndex belongs to this device
-                // commList.get(commIndex)->inject(buffer + 8);
-                commList.at(commIndex)->inject(buffer + 8);
-                //todo or otherwise relay the raw message to the subscriber list
+                receivedData.buffer = buffer + 8;
                 readIndex = 0;
-                return;
+                return &receivedData;
             }
             readIndex++;
+            return nullptr;
         }
     private:
         byte buffer[512];
         uint16_t readIndex;
-        uint16_t deviceIndex;
-        uint16_t dataSize;
-        uint16_t commIndex;
+        CommunicationData receivedData;
 }; 
 };
 
