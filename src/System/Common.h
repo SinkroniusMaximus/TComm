@@ -11,8 +11,6 @@
     #include "Entity.h"
     #include "ResourceIndexManager.h"
     #include "..\Communication\TComm\TComm.h"
-    #include "..\Communication\Media\SerialAdapter.h"
-    #include "..\Communication\Media\WifiSocket.h"
     #include "AbstractConnector.h"
     #include "BaseConnector.h"
     #include "Connector.h"
