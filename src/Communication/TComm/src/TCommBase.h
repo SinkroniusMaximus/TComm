@@ -11,6 +11,11 @@ namespace TComm
                 // use this method as client only
                 communicator.UpdateDeviceIndex(1, deviceIndex);
             }
+            void RemoveDevice(uint16_t deviceIndex)
+            {
+                communicator.RemoveDevice(deviceIndex);
+            }
+
             const std::type_info* GetObjectType(uint16_t deviceIndex, uint16_t objectIndex)
             {
                 return communicator.GetCommunicationObject(deviceIndex, objectIndex)->GetType();
@@ -26,7 +31,6 @@ namespace TComm
             }
             void SetObjectName(uint16_t deviceIndex, uint16_t objectIndex, const char* name)
             {
-                ;
                 communicator.GetCommunicationObject(deviceIndex, objectIndex)->SetName(name);
             }
             void SetObjectPath(uint16_t deviceIndex, uint16_t objectIndex, const char* path)
@@ -36,12 +40,12 @@ namespace TComm
 
             const int GetListSize(uint16_t deviceIndex)
             {
+                // PRINT("GetListSize");
                 return communicator.GetObjectListSize(deviceIndex);
             }
-            
-            void SetDeviceFilter(bool filterDeviceIndex, uint16_t filterIndex)
+            void RegisterDevice(uint16_t deviceIndex)
             {
-                communicator.SetDeviceFilter(filterDeviceIndex, filterIndex);
+                communicator.RegisterDevice(deviceIndex);
             }
 
             std::string getMacAddress() 
@@ -92,19 +96,19 @@ namespace TComm
             enum MESSAGETYPE
             {
                 eNone,                  // no action
-                eWhatsMyDeviceAddress,  // value = 0, text = MAC ID; request from client
-                eYourDeviceAddressIs,   // value = assigned device address, text = the same MAC ID as the client / starts interrogation
+                eWhatsMyDeviceAddress,  // value = 0, text = random ID; request from client
+                eYourDeviceAddressIs,   // value = assigned device address, text = the same random ID as the client   
                 eRequestAllData,        // avalanche all the content on the list, request from server
-                eRequestNameOfObject,     // value = data index, text = ''; request from server
-                eResponseNameOfObject,    // value = data index, text = name of data; response from client
-                eRequestPathOfObject,     // value = data index, text = ''; request from server
-                eResponsePathOfObject,    // value = data index, text = path of data; response from client
-                eRequestDataTypeOfObject, // value = data index, text = ''; request from server
-                eResponseDataTypeOfObject,    // value = data index, text = datatype; response from client
+                eRequestNameOfObject,     // value = data index, text1 = ''; request from server
+                eResponseNameOfObject,    // value = data index, text1 = name of data; response from client
+                eRequestPathOfObject,     // value = data index, text1 = ''; request from server
+                eResponsePathOfObject,    // value = data index, text1 = path of data; response from client
+                eRequestDataTypeOfObject, // value = data index, text1 = ''; request from server
+                eResponseDataTypeOfObject,    // value = data index, text1 = datatype; response from client
                 eRequestObject,             // value = data index, text1 = ''; request a complete object
                 eResponseObject,            // value = data index, text1 = name, text2 = path, text3 = datatype; response from client
-                eRequestListSize,       // value = 0, text = ''; request from server
-                eResponseListSize,       // value = data list size, text = '' response from client
+                eRequestListSize,       // value = 0, text1 = ''; request from server
+                eResponseListSize,       // value = data list size, text1 = '' response from client
                 eEndInterrogation,       // notify client the interrogation is over
                 ePleaseBePatient         // tell client to await its turn
             };
@@ -113,7 +117,7 @@ namespace TComm
             {
                 MESSAGE(std::string path) 
                 {
-                    std::string fullPath = path + "message\\";
+                    std::string fullPath = path + "\\message\\";
                     type.SetPath(fullPath.c_str());
                     type.SetUpdateInterval(eOnChange);
                     value.SetPath(fullPath.c_str());
@@ -129,12 +133,12 @@ namespace TComm
                     text5.SetPath(fullPath.c_str());
                     text5.SetUpdateInterval(eOnChange);
                 }
-                TemplateCommunicationObject<int> value{"value", 0};
-                TemplateCommunicationObject<std::string> text1{"text1", 0};
-                TemplateCommunicationObject<std::string> text2{"text2", 0};
-                TemplateCommunicationObject<std::string> text3{"text3", 0};
-                TemplateCommunicationObject<std::string> text4{"text4", 0};
-                TemplateCommunicationObject<std::string> text5{"text5", 0};
+                Xint value{"value", 0};
+                Xstring text1{"text1", 0};
+                Xstring text2{"text2", 0};
+                Xstring text3{"text3", 0};
+                Xstring text4{"text4", 0};
+                Xstring text5{"text5", 0};
                 TemplateCommunicationObject<MESSAGETYPE> type{"type", 0};
             };
 

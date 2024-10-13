@@ -12,7 +12,9 @@ static class Communicator// Communicator
     public:
         void Run() 
         {
+            // PRINT("Read data");
             ReadData();
+            // PRINT("update comm objects");
             UpdateCommObjects();
         }        
         void SetSendAllData()
@@ -22,104 +24,99 @@ static class Communicator// Communicator
     protected:
         void WriteData(const CommunicationData& commData, AbstractSubscriber* excludedSubscriber = nullptr) 
         {
-                // PRINT("write");
-                // PRINT("device index ");
-                // PRINT(String(commData.deviceIndex));
-                // PRINT("object index ");
-                // PRINT(String(commData.objectIndex));
-                // PRINT("datasize ");
-                // PRINT(String(commData.dataSize));
-                // PRINT("filterIndex");
-                // PRINT(String(filterIndex));
-            if(!filterDeviceIndex || (commData.deviceIndex == filterIndex))
+            for (auto& subscriber : subList)
             {
-                // PRINT("here");
-                for (auto& subscriber : subList)
+                if (subscriber != excludedSubscriber)
                 {
-                    if (subscriber != excludedSubscriber)
-                    {
-                        subscriber->Write(commData);
-                    }
+                    subscriber->Write(commData);
                 }
-            }
-            else
-            {
-                // PRINT("filtered");
             }
         }
 
         void InjectCommObject(CommunicationData commData, AbstractSubscriber* excludedSubscriber)
         {
-                // PRINT("Inject");
-                // PRINT("device index ");
-                // PRINT(String(commData.deviceIndex));
-                // PRINT("object index ");
-                // PRINT(String(commData.objectIndex));
-                // PRINT("datasize ");
-                // PRINT(String(commData.dataSize));
-            if(!filterDeviceIndex || (commData.deviceIndex == filterIndex))
+            // PRINT("injecting");
+            // PRINT("device index " << commData.deviceIndex);
+            // PRINT("object index " << commData.objectIndex);
+            // PRINT("datasize " << commData.dataSize);
+            auto deviceEntry = deviceObjectMap.find(commData.deviceIndex);
+            if (deviceEntry != deviceObjectMap.end()) 
             {
-                // PRINT("device index " << commData.deviceIndex);
-                // PRINT("object index " << commData.objectIndex);
-                // PRINT("datasize " << commData.dataSize);
-                auto deviceEntry = deviceObjectMap.find(commData.deviceIndex);
-                if (deviceEntry != deviceObjectMap.end()) 
+                // PRINT("device found");
+                
+                if(deviceEntry->second.size() > commData.objectIndex)
                 {
-                    // PRINT("device found");
-                    
-                    if(deviceEntry->second.size() > commData.objectIndex)
-                    {
-                        auto objectEntry = deviceEntry->second.at(commData.objectIndex);
-                        // PRINT("object found");
-                        objectEntry->Inject(commData.buffer);
-                    }
-                    else
-                    {
-                        ;
-                        // PRINT("object not found");
-                    }
+                    // PRINT("object found");
+                    auto objectEntry = deviceEntry->second.at(commData.objectIndex);                    
+                    objectEntry->Inject(commData);
                 }
                 else
                 {
-                    // PRINT("device not found");
-                    // TODO pass message through to subscribers, message is not meant for this device
+                    ;
+                    // PRINT("object not found");
                 }
-                WriteData(commData, excludedSubscriber);
             }
             else
             {
-                // PRINT("filtered");
+                // PRINT("device not found");
             }
+            WriteData(commData, excludedSubscriber);
         }
-
         int AddCommunicationObject(uint16_t deviceIndex, std::shared_ptr<AbstractCommunicationObject> communicationObject)
         {
             deviceObjectMap[deviceIndex].push_back(communicationObject);
+            deviceChangeMap[deviceIndex] = true;
             return deviceObjectMap[deviceIndex].size() - 1;
         }
 
-        template<typename T>
-        int AddCommunicationObject(uint16_t deviceIndex, T* communicationObject) 
-        {
-            static_assert(std::is_base_of<AbstractCommunicationObject, T>::value, "T must derive from AbstractCommunicationObject");
-            deviceObjectMap[deviceIndex].push_back(std::shared_ptr<AbstractCommunicationObject>(communicationObject, [](T*) {}));
+        int AddCommunicationObject(uint16_t deviceIndex, AbstractCommunicationObject* communicationObject) {
+            deviceObjectMap[deviceIndex].push_back(std::shared_ptr<AbstractCommunicationObject>(communicationObject, [](AbstractCommunicationObject*) {}));
+            deviceChangeMap[deviceIndex] = true;
             return deviceObjectMap[deviceIndex].size() - 1;
+        }
+
+        void RemoveCommunicationObject(uint16_t deviceIndex, AbstractCommunicationObject* communicationObject) {
+            auto& objects = deviceObjectMap[deviceIndex];
+            objects.erase(std::remove_if(objects.begin(), objects.end(),
+                [communicationObject](const std::shared_ptr<AbstractCommunicationObject>& obj) {
+                    return obj.get() == communicationObject;
+                }), objects.end());
+            deviceChangeMap[deviceIndex] = true;
+        }
+
+        void AddSubscriber(AbstractSubscriber* subscriber)
+        {
+            subList.push_back(subscriber);
+        }
+        
+        void RemoveSubscriber(AbstractSubscriber* subscriber)
+        {
+            subList.erase(std::remove_if(subList.begin(), subList.end(),
+            [subscriber](const AbstractSubscriber* sub) {
+                return sub == subscriber;
+            }), subList.end());
         }
 
         std::shared_ptr<AbstractCommunicationObject> GetCommunicationObject(uint16_t deviceIndex, uint16_t objectIndex)
         {
-            return deviceObjectMap[deviceIndex].at(objectIndex);
+            auto deviceEntry = deviceObjectMap.find(deviceIndex);
+            if (deviceEntry != deviceObjectMap.end()) 
+            {
+                if(deviceEntry->second.size() > objectIndex)
+                {
+                    auto objectEntry = deviceEntry->second.at(objectIndex); 
+                    return objectEntry;
+                }
+            }
+            std::shared_ptr<AbstractCommunicationObject> aco = std::make_shared<AbstractCommunicationObject>();
+            return aco;
         }
         
         size_t GetObjectListSize(uint16_t deviceIndex)
         {
             return deviceObjectMap[deviceIndex].size();
         }
-        void SetDeviceFilter(bool filterDeviceIndex, uint16_t filterIndex)
-        {
-            this->filterDeviceIndex = filterDeviceIndex;
-            this->filterIndex = filterIndex;
-        }
+
         // Updating device index by removing the old key and inserting the new key
         void UpdateDeviceIndex(uint16_t oldDeviceIndex, uint16_t newDeviceIndex) 
         {
@@ -130,26 +127,59 @@ static class Communicator// Communicator
                 for (std::shared_ptr<AbstractCommunicationObject> commObject : objectList) 
                 {
                     commObject->SetDeviceIndex(newDeviceIndex);
-
                 }
                 deviceObjectMap[newDeviceIndex] = std::move(deviceEntry->second);
                 deviceObjectMap.erase(deviceEntry);
             }
+            deviceChangeMap[oldDeviceIndex] = true;
+            deviceChangeMap[newDeviceIndex] = true;
         }
+
+        void RemoveDevice(uint16_t deviceIndex)
+        {
+            auto deviceEntry = deviceObjectMap.find(deviceIndex);
+            if (deviceEntry != deviceObjectMap.end()) 
+            {
+                deviceObjectMap.erase(deviceEntry);
+                deviceChangeMap[deviceIndex] = true;
+            }
+        }
+        
+        void RegisterDevice(uint16_t deviceIndex)
+        {          
+            for(AbstractSubscriber* subscriber : subList)
+            { 
+                subscriber->RegisterDevice(deviceIndex); 
+            } // notify the subscriber of change in a device
+        }
+
         std::unordered_map<uint16_t, std::vector<std::shared_ptr<AbstractCommunicationObject>>> deviceObjectMap; // Communication object list per device
+        std::unordered_map<uint16_t, bool> deviceChangeMap;
         std::vector<AbstractSubscriber*> subList; //  Subscriber object list
 
     private:
         void ReadData()
         {
-            for (i = 0; i < subList.size(); i=i+1) 
+            for(AbstractSubscriber* subscriber : subList)
             { 
-                subList.at(i)->Read(); 
+                subscriber->Read(); 
             } // read incoming data
+
         }
 
         void UpdateCommObjects()
         {
+            for (auto& deviceChanged : deviceChangeMap)
+            {
+                if(deviceChanged.second)
+                {
+                    PRINT("device changed, registring..");
+                    PRINT(deviceChanged.first);
+                    RegisterDevice(deviceChanged.first);
+                    deviceChanged.second = false;
+                }
+            }
+
             for (const auto& deviceEntry : deviceObjectMap) 
             {
                 // uint16_t deviceIndex = deviceEntry.first;
@@ -158,11 +188,11 @@ static class Communicator// Communicator
                 {
                     if(sendAllData)
                     {
-                        commObject->SetChanged(); //force sending all data
+                        commObject->SetChanged(); //force sending all data or on device change
                     }
                     if(IsTimeToUpdate(commObject->GetUpdateInterval()) || sendAllData)
                     {
-                        commObject->Update();
+                        commObject->Update(); 
                     }
                 }
             } // on change write
@@ -194,8 +224,6 @@ static class Communicator// Communicator
         }
         int i;
         bool sendAllData;
-        bool filterDeviceIndex;
-        uint16_t filterIndex;
 } communicator;
 };
 

@@ -7,7 +7,7 @@ class TemplateCommunicationObject : public BaseCommunicationObject //Template Co
 {
     public:
         TemplateCommunicationObject(int deviceIndex = 1) : BaseCommunicationObject(deviceIndex)
-        { 
+        {             
             Initialize(nullptr, nullptr);
         }
         TemplateCommunicationObject(const char* name, int deviceIndex = 1) : BaseCommunicationObject(deviceIndex)
@@ -49,7 +49,7 @@ class TemplateCommunicationObject : public BaseCommunicationObject //Template Co
         operator T*()
         { 
             return &value; 
-        } 
+        }
 
         T* operator ->() 
         { 
@@ -102,21 +102,14 @@ class TemplateCommunicationObject : public BaseCommunicationObject //Template Co
         { 
             if(changed || !(value == valueOld)) 
             {
-                // if constexpr (std::is_same_v<T, std::string>)
-                // {
-                //     PRINT("value changed");
-                //     PRINT(objectName.c_str());
-                //     Serial.println(value.c_str());
-                // }
-                // else
-                // {
-                //     PRINT("value changed");
-                //     PRINT(objectName.c_str());
-                //     Serial.println(value);
-                // }
+                // PRINT("writing data: ");
+                // PRINT(objectName);
+                // PRINT(objectPath);
+                // PRINT(value);
                 CommunicationData commData = GetData();
                 // on change writeData
                 WriteData(commData);
+                // PRINT("on to the next");
                 valueOld = value;
                 changed = false;
                 if constexpr (std::is_same_v<T, std::string>) {
@@ -125,17 +118,31 @@ class TemplateCommunicationObject : public BaseCommunicationObject //Template Co
             } 
         }
 
-        void Inject(byte buffer[]) override 
+        void Inject(CommunicationData commData) override 
         {
             valueOld = value;
             if constexpr (std::is_same_v<T, std::string>) 
             {
-                value = std::string(reinterpret_cast<char*>(buffer));
+                value = std::string(reinterpret_cast<char*>(commData.buffer), commData.dataSize);
             } else 
             {
-                std::memcpy(&value, buffer, sizeof(T));
+                std::memcpy(&value, commData.buffer, sizeof(T));
             }
+            // PRINT("name");
+            // PRINT(objectName);
+            // PRINT("path");
+            // PRINT(objectPath);
+            // PRINT("size");
+            // PRINT(commData.dataSize);
+
+            // PRINT("new injected value ------");
+            // PRINT(value);
             changeReceived = !(value == valueOld);
+            if(changeReceived)
+            {
+                ;
+                // PRINT("changed:");
+            }
             valueOld = value;
         }
 

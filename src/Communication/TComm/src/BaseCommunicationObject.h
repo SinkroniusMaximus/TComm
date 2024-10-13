@@ -10,6 +10,10 @@ class BaseCommunicationObject : public AbstractCommunicationObject
             SetDeviceIndex(deviceIndex);
             RegisterObject();
         }
+        ~BaseCommunicationObject()
+        {
+            UnregisterObject();
+        }
 
         void SetDeviceIndex(int deviceIndex)
         {
@@ -17,6 +21,10 @@ class BaseCommunicationObject : public AbstractCommunicationObject
         }
 
     protected:
+        virtual void UnregisterObject()
+        {
+            communicator.RemoveCommunicationObject(deviceIndex, this);
+        }
         virtual void RegisterObject()
         {
             objectIndex = communicator.AddCommunicationObject(deviceIndex, this);
@@ -27,6 +35,7 @@ class BaseCommunicationObject : public AbstractCommunicationObject
         }
         int objectIndex;
         int deviceIndex;
+        
 
 };
 };

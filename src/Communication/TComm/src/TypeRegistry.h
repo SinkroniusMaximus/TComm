@@ -19,11 +19,13 @@ namespace TComm
         // Create an object based on the registered type name
         static void CreateObject(const char* typeName, int deviceIndex) 
         {
+            // PRINT("creating object");
             auto it = registry().find(typeName);
             if (it != registry().end()) 
             {
                 it->second(deviceIndex);
             }
+            // PRINT("object created");
         }
         static std::string Demangle(const char* name) 
         {

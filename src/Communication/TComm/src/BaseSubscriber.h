@@ -7,7 +7,11 @@ class BaseSubscriber : public AbstractSubscriber
     public:
         BaseSubscriber()
         {
-            communicator.subList.push_back(this);
+            communicator.AddSubscriber(this);
+        }
+        ~BaseSubscriber()
+        {
+            communicator.RemoveSubscriber(this);
         }
         const std::type_info* GetObjectType(uint16_t deviceIndex, uint16_t objectIndex)
         {
@@ -24,6 +28,16 @@ class BaseSubscriber : public AbstractSubscriber
         const size_t GetObjectDataSize(uint16_t deviceIndex, uint16_t objectIndex)
         {
             return communicator.GetCommunicationObject(deviceIndex, objectIndex)->GetSize();
+        }
+
+        const CommunicationData GetObjectData(uint16_t deviceIndex, uint16_t objectIndex)
+        {
+            return communicator.GetCommunicationObject(deviceIndex, objectIndex)->GetData();
+        }
+
+        const std::shared_ptr<AbstractCommunicationObject> GetCommunicationObject(uint16_t deviceIndex, uint16_t objectIndex)
+        {
+            return communicator.GetCommunicationObject(deviceIndex, objectIndex);
         }
 
         const int GetListSize(uint16_t deviceIndex)

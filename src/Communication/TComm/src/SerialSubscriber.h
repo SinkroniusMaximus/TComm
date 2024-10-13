@@ -11,6 +11,10 @@ class SerialSubscriber : ByteSerializer, BaseSubscriber // Subscription of seria
             port = newPort;
         }
 
+        StreamInterface* GetPort() const {
+            return port;
+        }
+
         void Write(CommunicationData data) override 
         {
             byte toSend[data.dataSize + 8];

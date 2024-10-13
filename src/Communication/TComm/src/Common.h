@@ -1,5 +1,5 @@
-#ifndef TCOMM_COMMON_H
-#define TCOMM_COMMON_H
+#ifndef COMMON_H
+#define COMMON_H
         #include <vector>
         #include <typeinfo>
         #include <cxxabi.h>
@@ -10,18 +10,26 @@
             #include <Arduino.h>
             #include "esp_system.h"  // Include for ESP32-specific functions
         #elif defined(_WIN32) || defined(_WIN64)
-                #include <iostream>
-                #include <winsock2.h>
-                #define WINDOWS_LEAN_AND_MEAN
-                #include <windows.h>
-                #include <cstdint>
-                #include <setupapi.h>
-                #include <iphlpapi.h>
-                #pragma comment(lib, "iphlpapi.lib")
-                #pragma comment(lib, "ws2_32.lib")
-                #include <functional>
-                #include <thread>
-                #include <mutex>
+        // Windows-specific includes
+            #include <iostream>
+            #include <winsock2.h>
+            #define WINDOWS_LEAN_AND_MEAN
+            #include <windows.h>
+            #include <cstdint>
+            #include <setupapi.h>
+            #include <iphlpapi.h>
+            #pragma comment(lib, "iphlpapi.lib")
+            #pragma comment(lib, "ws2_32.lib")
+
+            // C++ Standard Library includes
+            #include <functional>
+            #include <thread>
+            #include <mutex>
+            #include <future>
+            #include <vector>
+            #include <string>
+            #include <map>
+            #include <sstream>
         #elif defined(__linux__)
             #include <iostream>
             #include <dirent.h>
@@ -29,8 +37,10 @@
             #include <unistd.h>
             #include <termios.h>
         #endif
+        
         #include "../../../System/ClockBits.h"
         #include "../../../System/Timer.h"
+        #include "../../../System/ResourceIndexManager.h"
         namespace TComm
         {
             using GenericLibrary::Timer;
@@ -41,13 +51,17 @@
                     Serial.println(formattedString);
                 }
             #endif
-            #ifdef _WIN32
+            #if defined(_WIN32) || defined(_WIN64)
                 typedef std::string String;
-                void PRINT(const std::string& formattedString) 
-                {
-                    std::cout << formattedString << std::endl;
-                    std::cout.flush();
-                }
+                 #define PRINT(formattedString)  \
+                 std::cout << formattedString << std::endl;  \
+                 std::cout.flush();
+
+                // void PRINT(const std::string& formattedString) 
+                // {
+                //     std::cout << formattedString << std::endl;
+                //     std::cout.flush();
+                // }
             #endif
         }
-#endif //TCOMM_COMMON_H
+#endif //COMMON_H
