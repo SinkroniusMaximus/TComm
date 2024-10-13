@@ -3,7 +3,7 @@
 
 namespace GenericLibrary
 {
-
+    
 template<typename T>
 class Connector : public BaseConnector<T>
 {

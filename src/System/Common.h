@@ -3,15 +3,17 @@
     #ifdef ARDUINO
         #include <Arduino.h>
     #endif
+
     #include <memory>
     #include <string>
-
     #include "Timer.h"
     #include "ClockBits.h"
     #include "Entity.h"
-    #include "Communication\TComm\TComm.h"
-    #include "Communication\Media\SerialAdapter.h"
-    #include "Communication\Media\WifiSocket.h"
+    #include "ResourceIndexManager.h"
+    #include "..\Communication\TComm\TComm.h"
+    #include "..\Communication\Media\SerialAdapter.h"
+    #include "..\Communication\Media\WifiSocket.h"
+    #include "AbstractConnector.h"
     #include "BaseConnector.h"
     #include "Connector.h"
 
@@ -20,8 +22,7 @@
         #ifdef ARDUINO
             #define PRINT(formattedString)  \
             Serial.println(formattedString);
-        #endif
-        #ifdef _WIN32
+        #elif defined(_WIN32) || defined(_WIN64) || defined(__linux__)
             typedef std::string String;
             #define PRINT(formattedString)  \
                 std::cout << formattedString << std::endl; \
