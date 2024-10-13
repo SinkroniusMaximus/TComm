@@ -2,6 +2,7 @@
 #define TCOMM_H
 
 #include "src/Common.h"
+#include "src/StreamInterface.h"
 #if defined(_WIN32) || defined(_WIN64)
   #include "src/WinSerial.h"
 #elif defined(__linux__)
@@ -21,12 +22,8 @@
 #include "src/TemplateCommunicationObject.h"
 #include "src/DummyCommunicationObject.h"
 
-#include "src/TCommBase.h"
-#include "src/StreamInterface.h"
 #include "src/ByteSerializer.h"
-
 #include "src/SerialSubscriber.h"
-
 
 #include "src/TypeRegistry.h"
 
@@ -40,7 +37,7 @@ namespace TComm
   typedef TemplateCommunicationObject<bool> Xbool;
   typedef TemplateCommunicationObject<std::string> Xstring;
 };
-
+#include "src/TCommBase.h"
 #include "src/TCommClient.h"
 #include "src/TCommServer.h"
 
